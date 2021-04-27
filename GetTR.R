@@ -1,9 +1,11 @@
 GetTR <- function(valid_dat){
   # Cal the sum of TPR and TNR 
+  #
   # Arg:
-  # valid_dat: a dataframe object contains cols: y, y_hat and DATE
+  #  valid_dat: a dataframe object contains cols: y, y_hat and DATE
+  #
   # Return:
-  # the sum of True Postive Rate and Ture Negative Rate
+  #  the sum of True Postive Rate and Ture Negative Rate
   
   
   # percentile rank the y, y_hat, y_hat_bsl
@@ -32,7 +34,6 @@ GetTR <- function(valid_dat){
   TP <- prop.table(m,2)[1,1]
   # TN Rate
   TN <- prop.table(m,2)[3,3]
-  
+
   return(TP+TN)
-  
 }

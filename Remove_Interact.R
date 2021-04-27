@@ -26,20 +26,12 @@ NA_coverage = function(X, group)
 
 Get_NA_groups = function(mat)
 {
-  colnames = colnames(mat) # levels in asset group
-  indexes = which(mat >= .6, arr.ind = TRUE)
-  n = names(indexes[,1])
-  col = rep(0,nrow(indexes))
-  for(i in 1:nrow(indexes))
-  {
-    x = indexes[i,2]
-    col[i] =  colnames[x]
-  }
-  cbind.data.frame(Factor = n, Group = col, Perc_NA = mat[indexes])
+  reshape_mat <- setNames(reshape2::melt(mat), c('Factor', 'Group', 'Perc_NA'))
+  reshape_mat <-reshape_mat %>% filter(Perc_NA > 0.6)
+  reshape_mat %>% select(Factor,Group)
 }
 
-remove_interact = function(data_merged_w_na,start_date,end_date)
-{
+remove_interact = function(data_merged_w_na,start_date,end_date){
   # Function to obtain which factors have insufficient coverage for a given time window
   # Args:  
   # data_merged_w_na: a data.frame
@@ -57,12 +49,11 @@ remove_interact = function(data_merged_w_na,start_date,end_date)
   coverage.industry_group = NA_coverage(window,"INDUSTRY_GROUP")
   
   #Get which LOI have >60% missing for each asset group
-  NA.region = Get_NA_groups(coverage.region)
-  NA.sector = Get_NA_groups(coverage.sector)
-  NA.industry_group = Get_NA_groups(coverage.industry_group)
   
   #Combine matrices for region, sector, industry group
-  missing = rbind(NA.region,NA.sector,NA.industry_group)
+  missing = rbind(Get_NA_groups(coverage.region),
+                  Get_NA_groups(coverage.sector),
+                  Get_NA_groups(coverage.industry_group))
   
   return(missing)
 }

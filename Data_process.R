@@ -45,7 +45,6 @@ data_process <- function(data_numeric,data_categorical){
                                          ifelse(SECTOR == common_levels[4],paste0(common_levels[4],"_S"),SECTOR))))) %>%
     mutate(SECTOR = as.factor(SECTOR))       # Cast SECTOR back to factor
   
-  
   ##################################################################################
   ######## 5. Missing data imputation ##############################################
   ##################################################################################
@@ -65,33 +64,17 @@ data_process <- function(data_numeric,data_categorical){
   ######## 6. Calculate the Relative Return ########################################
   ##################################################################################
   
-  # Calculate the average return for each date
-  Avg_RET <- data_merged %>%
-    group_by(DATE) %>%
-    summarise(FUT_52W_RET_Mean = mean(FUT_52W_RET,na.rm = T),
-              FUT_24W_RET_Mean = mean(FUT_24W_RET,na.rm = T),
-              FUT_1W_RET_Mean = mean(FUT_1W_RET,na.rm = T),
-              FUT_4W_RET_Mean = mean(FUT_4W_RET,na.rm = T),
-              FUT_12W_RET_Mean = mean(FUT_12W_RET,na.rm = T))
+  data_merged <- data_merged %>% group_by(DATE) %>% 
+    mutate(FUT_52W_RET = percent_rank(FUT_52W_RET),
+           FUT_24W_RET = percent_rank(FUT_24W_RET),
+           FUT_12W_RET = percent_rank(FUT_12W_RET),
+           FUT_4W_RET = percent_rank(FUT_4W_RET),
+           FUT_1W_RET = percent_rank(FUT_1W_RET)) %>%
+    ungroup(DATE)
   
-  # Subtract the average return from the return of each stock on that day
-  data_merged <- inner_join(data_merged, Avg_RET, by = c("DATE"))
-  ##Subtract the average return to get relative return
-  data_merged <- data_merged %>% mutate(
-    FUT_52W_RLT_RET = FUT_52W_RET - FUT_52W_RET_Mean,
-    FUT_24W_RLT_RET = FUT_24W_RET - FUT_24W_RET_Mean,
-    FUT_1W_RLT_RET = FUT_1W_RET - FUT_1W_RET_Mean,
-    FUT_4W_RLT_RET = FUT_4W_RET - FUT_4W_RET_Mean,
-    FUT_12W_RLT_RET = FUT_12W_RET - FUT_12W_RET_Mean
-  )
-  ## remove mean cols
-  data_merged <- data_merged %>% mutate(
-    FUT_52W_RET_Mean = NULL,
-    FUT_24W_RET_Mean = NULL,
-    FUT_1W_RET_Mean = NULL,
-    FUT_4W_RET_Mean = NULL,
-    FUT_12W_RET_Mean = NULL
-  )
+  # data_merged <- data_merged %>% group_by(DATE) %>%
+  #   mutate(across(matches("LOI_"), percent_rank)) %>%
+  #   ungroup(DATE)
   ##################################################################################
   ################################ Return ##########################################
   ##################################################################################
@@ -125,7 +108,7 @@ data_process_no_impute <- function(data_numeric,data_categorical){
     mutate(SECTOR = as.factor(SECTOR))       # Cast SECTOR back to factor
   
   ##################################################################################
-  ########   3. Renama the same levels in INDUSTRY_GROUP and SECTOR  ###############
+  ########   3. Rename the same levels in INDUSTRY_GROUP and SECTOR  ###############
   ##################################################################################
   
   # Energy, Utilities, Materials, Real Estate are same names used in INDUSTRY_GROUP and SECTOR
@@ -138,6 +121,7 @@ data_process_no_impute <- function(data_numeric,data_categorical){
                                   ifelse(SECTOR == common_levels[3],paste0(common_levels[3],"_S"),
                                          ifelse(SECTOR == common_levels[4],paste0(common_levels[4],"_S"),SECTOR))))) %>%
     mutate(SECTOR = as.factor(SECTOR))       # Cast SECTOR back to factor
+  
   
   ##################################################################################
   ################################ Return ##########################################

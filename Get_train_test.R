@@ -1,4 +1,4 @@
-Get_train_test_rolling_CV <- function(data,start_date, buffer_length, test_length)
+Get_train_test_rolling_CV <- function(data,start_date, train_length, buffer_length, test_length)
 {
   ## data: A matrix containing preprocessed data for an interaction model.
   ## Note that the data matrix must contain a date column
@@ -6,11 +6,11 @@ Get_train_test_rolling_CV <- function(data,start_date, buffer_length, test_lengt
   ## buffer_length: desired buffer window; matches number of weeks in type of future returns being predicted
   
   train_start_date = ymd(start_date)
-  train_end_date = train_start_date + years(10)
+  train_end_date = train_start_date + years(train_length)
   
   
   test_start_date = train_end_date + weeks(buffer_length)
-  test_end_date = test_start_date + months(test_length)
+  test_end_date = train_end_date + months(test_length) + weeks(buffer_length)
   
   # Get initial train set
   train_set = data %>% filter(DATE >= train_start_date, DATE<=train_end_date)

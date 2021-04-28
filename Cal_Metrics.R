@@ -71,11 +71,16 @@ Metrics_testdat <- function(testdat , baseline = "False"){
   ####################################################
   # Spearman correlation consistency - across groups #
   ####################################################
-  corr_group <- testdat %>% 
-    group_by(INDUSTRY_GROUP) %>% 
+  corr_group_date <- testdat %>% 
+    group_by(INDUSTRY_GROUP,DATE) %>% 
     summarize(cor = cor(y_pct, y_hat_pct, method = "spearman"),
               cor_diff = cor(y_pct, y_hat_pct, method = "spearman") - cor(y_pct, y_hat_bsl_pct, method = "spearman")) 
   
+  
+  corr_group <- corr_group_date %>%
+    group_by(INDUSTRY_GROUP) %>% 
+    summarize(cor = mean(cor),
+              cor_diff = mean(cor_diff))
   ## get the % of postive value in each col (cor, cor_bsl) in corr_group
   corr_group <- corr_group %>%
     mutate(cor = ifelse(cor > 0, 1, 0),

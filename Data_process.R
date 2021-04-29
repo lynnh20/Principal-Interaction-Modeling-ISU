@@ -65,11 +65,11 @@ data_process <- function(data_numeric,data_categorical){
   ##################################################################################
   
   data_merged <- data_merged %>% group_by(DATE) %>% 
-    mutate(FUT_52W_RET = percent_rank(FUT_52W_RET),
-           FUT_24W_RET = percent_rank(FUT_24W_RET),
-           FUT_12W_RET = percent_rank(FUT_12W_RET),
-           FUT_4W_RET = percent_rank(FUT_4W_RET),
-           FUT_1W_RET = percent_rank(FUT_1W_RET)) %>%
+    mutate(FUT_52W_RET_pct = percent_rank(FUT_52W_RET),
+           FUT_24W_RET_pct = percent_rank(FUT_24W_RET),
+           FUT_12W_RET_pct = percent_rank(FUT_12W_RET),
+           FUT_4W_RET_pct = percent_rank(FUT_4W_RET),
+           FUT_1W_RET_pct = percent_rank(FUT_1W_RET)) %>%
     ungroup(DATE)
   
   # data_merged <- data_merged %>% group_by(DATE) %>%

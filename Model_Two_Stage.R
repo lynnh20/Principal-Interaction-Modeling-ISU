@@ -135,7 +135,7 @@ Interaction_Model <- function(train_set,test_set,para,remove_terms,response,asse
       ########################### Return a list  #######################################
       ##################################################################################
       
-      return(list(test_set,Inter_vari))  
+      return(list(test_set,fit2[which(abs(fit2$s0)>0),]))  
     }
   }
 }
